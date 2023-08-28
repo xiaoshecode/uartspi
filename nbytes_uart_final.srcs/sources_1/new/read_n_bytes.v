@@ -103,12 +103,12 @@ module read_n_bytes
         else begin
             if(rx_bytes_done) begin
                 rx_bytes_num <= rx_bytes_num +1'b1;
-                rx_data_nbytes[8*BYTE_NUM-1:8*BYTE_NUM-8] <= data_i;
-                rx_data_nbytes = rx_data_nbytes >> 8;
+                rx_data_nbytes[7:0] <= data_i;
+                rx_data_nbytes = rx_data_nbytes  << 8;
                 if(rx_bytes_num == BYTE_NUM-1) begin
                     rx_nbytes_finish <= 1'b1;
                     rx_bytes_num <= 4'd0; 
-                    nbytes_data_in_o <= {data_i,rx_data_nbytes[8*BYTE_NUM-9:0]};
+                    nbytes_data_in_o <= {rx_data_nbytes[8*BYTE_NUM-1:8],data_i};
                 end
                 else begin
                     rx_nbytes_finish <= 1'b0;
@@ -127,11 +127,9 @@ module read_n_bytes
             if(rx_bytes_done) begin
                 if(rx_valid_i) begin 
                     rx_nbytes_error_o <= 1'b0;
-//                    rx_nbytes_valid_o <= 1'b1;
                 end
                 else begin 
                     rx_nbytes_error_o <= 1'b1;
-//                    rx_nbytes_valid_o <= 1'b0;
                 end
             end
             else begin
@@ -142,11 +140,6 @@ module read_n_bytes
      end
     
 endmodule
-
-
-
-
-
 
 
 //                    nbytes_data_in_o <= rx_data_nbytes;
@@ -205,4 +198,6 @@ endmodule
 //            end
 //        end
 //     end
-     
+
+//                rx_data_nbytes[8*BYTE_NUM-1:8*BYTE_NUM-8] <= data_i;
+//                rx_data_nbytes = rx_data_nbytes  >> 8;     

@@ -118,16 +118,16 @@ module send_n_bytes
             if(send_en_pos) begin
                 tx_send_num <= 'd1;
                 data_out_reg <= nbytes_data_out_i;
-                data_o <= nbytes_data_out_i[7:0];
-                data_out_reg = data_out_reg >> 8;
+                data_o <= nbytes_data_out_i[8*BYTE_NUM-1:8*BYTE_NUM-8];
+//                data_out_reg = data_out_reg << 8;
                 tx_en_reg <= 1'b1;
                 tx_nbytes_busy_o <= 1'b1;
             end
             else begin
                 if(send_done_pos) begin
                     tx_send_num <= tx_send_num + 1'd1;
-                    data_o <= data_out_reg[15:8];
-                    data_out_reg = data_out_reg >> 8;
+                    data_o <= data_out_reg[8*BYTE_NUM-9:8*BYTE_NUM-16];
+                    data_out_reg = data_out_reg << 8;
                 end
                 else begin
                     tx_send_num <= tx_send_num;
@@ -156,4 +156,8 @@ endmodule
 //    output tx_en,
 //    output reg [7:0] data,
 //    output reg [31:0] data_out_reg,
-   
+
+//data_o <= nbytes_data_out_i[7:0];
+//data_out_reg = data_out_reg >> 8;
+//data_o <= data_out_reg[15:8];
+//data_out_reg = data_out_reg >> 8;  

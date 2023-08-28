@@ -119,7 +119,6 @@ module send_n_bytes
                 tx_send_num <= 'd1;
                 data_out_reg <= nbytes_data_out_i;
                 data_o <= nbytes_data_out_i[8*BYTE_NUM-1:8*BYTE_NUM-8];
-//                data_out_reg = data_out_reg << 8;
                 tx_en_reg <= 1'b1;
                 tx_nbytes_busy_o <= 1'b1;
             end

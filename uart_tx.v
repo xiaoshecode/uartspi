@@ -32,7 +32,7 @@ module uart_tx
         input [7:0] data_out_i,         // Data need to be sent
         
         output reg tx_busy_o,           // Busy signal showing the transmission module is working 
-        output reg tx_send_byte_done_o, // Showing that 1 byte has been sent 
+//        output reg tx_send_byte_done_o, // Showing that 1 byte has been sent 
         output reg u_tx_o               // Data out to computer, bit by bit 
     );
     
@@ -132,11 +132,11 @@ module uart_tx
         if(!rst_n_i) begin
             tx_busy_o <= 1'b0;
         end
+        else if(bit_cnt == 4'd10 && bit_flag) begin
+            tx_busy_o <= 1'b0 ;
+        end
         else if(tx_en_i) begin
             tx_busy_o <= 1'b1;
-        end
-        else if(bit_cnt == 4'd10) begin
-            tx_busy_o <= 1'b0 ;
         end
         else begin
             tx_busy_o <= tx_busy_o;
@@ -147,7 +147,7 @@ module uart_tx
     always@(posedge clk_i or negedge rst_n_i) begin
         if(!rst_n_i) begin
             u_tx_o <= 1'b1;
-            tx_busy_o <= 1'b0;
+//            tx_busy_o <= 1'b0;
         end
         else if(bit_flag)begin
             case(bit_cnt)
@@ -207,15 +207,15 @@ module uart_tx
     always@(posedge clk_i or negedge rst_n_i) begin
         if(!rst_n_i) begin 
             tx_done <= 1'b0;
-            tx_send_byte_done_o <= 1'b0;
+//            tx_send_byte_done_o <= 1'b0;
         end
         else if(bit_cnt == 4'd10 && bit_flag) begin
             tx_done <= 1'b1;
-            tx_send_byte_done_o <= 1'b1;
+//            tx_send_byte_done_o <= 1'b1;
         end
         else begin
             tx_done <= 1'b0;
-            tx_send_byte_done_o <= 1'b0;
+//            tx_send_byte_done_o <= 1'b0;
         end
     end
     

@@ -45,7 +45,10 @@ module  uart
     wire tx_busy_neg;                       // Signal to catch negedge of tx_busy signal
     wire error_pos;                         // Signal to catch posedge of rx data error signal
     wire valid_neg;                         // Signal to catch posedge of rx data valid signal
+    wire rx_nbytes_done_i;
+    wire rx_nbytes_crc_valid;
     wire [8*BYTE_NUM-1:0] uart_nbytes_data; // Signal to tranmit uart data from read n bytes module to send n bytes module
+    
     
     // Reg definition
     reg rx_busy_reg0;                       // Flip-flop reg to catch negedge of rx_busy signal
@@ -75,8 +78,8 @@ module  uart
         .rst_n_i (rst_n_i),
         .uart_rxd_i (uart_rxd_i),
         
-        .rx_nbytes_valid_o (crc_valid_i),
-        .rx_nbytes_busy_o (rx_nbytes_busy_i),    
+        .rx_nbytes_data_valid_o(rx_nbytes_done_i),  
+        .nbytes_crc_valid_o(rx_nbytes_crc_valid),   
         .nbytes_data_in_o (uart_nbytes_data)
     );
     
@@ -100,36 +103,7 @@ module  uart
 
 //////////////////////////////////////////////////////////////////////////////////
     // Control part of read n bytes module and send n bytes module
-    
-    // Catch negedge of rx_busy signal
-    assign rx_busy_neg = (~rx_busy_reg0) & (rx_busy_reg1);
-    
-    always@(posedge clk_50m_i or negedge rst_n_i) begin
-        if(!rst_n_i) begin
-          rx_busy_reg0 <= 1'b0;
-          rx_busy_reg1 <= 1'b0;  
-        end
-        else begin
-            rx_busy_reg0 <= rx_nbytes_busy_i;
-            rx_busy_reg1 <= rx_busy_reg0;
-        end
-    end
-
-    
-    // Catch posedge of crc_valid_i signal
-    assign valid_neg = (~valid_reg0) & (valid_reg1);
-    
-    always@(posedge clk_50m_i or negedge rst_n_i) begin
-        if(!rst_n_i) begin
-          valid_reg0 <= 1'b0;
-          valid_reg1 <= 1'b0;  
-        end
-        else begin
-            valid_reg0 <= crc_valid_i;
-            valid_reg1 <= valid_reg0;
-        end
-    end
-    
+        
     // Catch negedge of tx_busy signal
     assign tx_busy_neg = (~tx_busy_reg0) & (tx_busy_reg1);
     
@@ -153,8 +127,8 @@ module  uart
             rx_read_reg <= 3'd0;
         end
         else begin
-            if(rx_busy_neg) begin
-                if(!valid_neg)
+            if(rx_nbytes_done_i) begin
+                if(rx_nbytes_crc_valid)
                     rx_read_reg <= rx_read_reg + 1'd1;
                 else
                     rx_read_reg <= rx_read_reg; 
@@ -191,9 +165,9 @@ module  uart
     
         .probe0(tx_send_en_o), // input wire [0:0]  probe0  
         .probe1(uart_nbytes_data), // input wire [31:0]  probe1
-        .probe2(rx_read_reg), // input wire [7:0]  probe1
-        .probe3(tx_send_reg), // input wire [3:0]  probe3 
-        .probe4(rx_busy_neg)  // input wire [0:0]  probe4   
+        .probe2(tx_nbytes_busy_i), // input wire [7:0]  probe1
+        .probe3(rx_nbytes_done_i), // input wire [3:0]  probe3 
+        .probe4(rx_nbytes_crc_valid)  // input wire [0:0]  probe4   
     );
 
 
@@ -258,3 +232,37 @@ endmodule
 //            error_reg1 <= error_reg0;
 //        end
 //    end
+
+
+//    // Catch negedge of rx_busy signal
+//    // Catch posedge of rx_data_valid signal
+//    assign rx_busy_neg = (~rx_busy_reg0) & (rx_busy_reg1);
+    
+//    always@(posedge clk_50m_i or negedge rst_n_i) begin
+//        if(!rst_n_i) begin
+//          rx_busy_reg0 <= 1'b0;
+//          rx_busy_reg1 <= 1'b0;  
+//        end
+//        else begin
+//            rx_busy_reg0 <= rx_nbytes_busy_i;
+//            rx_busy_reg1 <= rx_busy_reg0;
+//        end
+//    end
+
+    
+//    // Catch negedge of crc_valid_i signal
+//    assign valid_neg = (~valid_reg0) & (valid_reg1);
+    
+//    always@(posedge clk_50m_i or negedge rst_n_i) begin
+//        if(!rst_n_i) begin
+//          valid_reg0 <= 1'b0;
+//          valid_reg1 <= 1'b0;  
+//        end
+//        else begin
+//            valid_reg0 <= crc_valid_i;
+//            valid_reg1 <= valid_reg0;
+//        end
+//    end
+
+//        .rx_nbytes_valid_o (crc_valid_i),
+//        .rx_nbytes_busy_o (rx_nbytes_busy_i),

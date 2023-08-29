@@ -69,7 +69,8 @@ module send_n_bytes
         .data_out_i (data_o),
         .tx_en_i(tx_en_o),
         
-        .tx_send_byte_done_o(tx_send_byte_done_i),
+        .tx_busy_o(tx_busy_in),
+//        .tx_send_byte_done_o(tx_send_byte_done_i),
         .u_tx_o (uart_txd_o)  
     );
 //////////////////////////////////////////////////////////////////////////////////
@@ -89,8 +90,8 @@ module send_n_bytes
         end
     end
     
-    // Catch posedge of 1 byte sent done signal
-    assign send_done_pos = send_done_reg0 & (~send_done_reg1);
+    // Catch negedge of 1 byte sent done signal
+    assign send_done_pos = (~send_done_reg0) & (send_done_reg1);
     
     always @(posedge clk_i or negedge rst_n_i) begin         
         if (!rst_n_i) begin
@@ -98,10 +99,24 @@ module send_n_bytes
             send_done_reg1 <= 1'b0;
         end                                                      
         else begin                                               
-            send_done_reg0 <= tx_send_byte_done_i;                               
+            send_done_reg0 <= tx_busy_in;                               
             send_done_reg1 <= send_done_reg0;                            
         end
     end
+    
+//    // Catch posedge of 1 byte sent done signal
+//    assign send_done_pos = send_done_reg0 & (~send_done_reg1);
+    
+//    always @(posedge clk_i or negedge rst_n_i) begin         
+//        if (!rst_n_i) begin
+//            send_done_reg0 <= 1'b0;                                  
+//            send_done_reg1 <= 1'b0;
+//        end                                                      
+//        else begin                                               
+//            send_done_reg0 <= tx_send_byte_done_i;                               
+//            send_done_reg1 <= send_done_reg0;                            
+//        end
+//    end
     
     
     // Generating enable signal for tx module
@@ -138,7 +153,8 @@ module send_n_bytes
                     tx_nbytes_busy_o <= 1'b0;
                 end
                 else begin
-                    tx_nbytes_busy_o <= 1'b1;
+//                    tx_nbytes_busy_o <= 1'b1;
+                    tx_nbytes_busy_o <= tx_nbytes_busy_o;
                 end                
             end
         end
@@ -160,3 +176,18 @@ endmodule
 //data_out_reg = data_out_reg >> 8;
 //data_o <= data_out_reg[15:8];
 //data_out_reg = data_out_reg >> 8;  
+
+
+//// Catch posedge of 1 byte sent done signal
+//    assign send_done_pos = send_done_reg0 & (~send_done_reg1);
+    
+//    always @(posedge clk_i or negedge rst_n_i) begin         
+//        if (!rst_n_i) begin
+//            send_done_reg0 <= 1'b0;                                  
+//            send_done_reg1 <= 1'b0;
+//        end                                                      
+//        else begin                                               
+//            send_done_reg0 <= tx_send_byte_done_i;                               
+//            send_done_reg1 <= send_done_reg0;                            
+//        end
+//    end

@@ -124,32 +124,7 @@ module uart_rx
         else
             bit_cnt <= bit_cnt;
     end
-    
-    
-//    // Receiving and store data
-//    always@(posedge clk_i or negedge rst_n_i) begin
-//        if(!rst_n_i) 
-//            rx_data <= 9'b000000000;
-//        else if(bit_flag)begin     
-//            case(bit_cnt)
-//                4'd0: begin rx_data <= rx_data; rx_busy_o <= 1'b0;end
-//                4'd1: begin rx_data[0] <= u_rx1; rx_busy_o <= 1'b1;end
-//                4'd2: begin rx_data[1] <= u_rx1; rx_busy_o <= 1'b1;end
-//                4'd3: begin rx_data[2] <= u_rx1; rx_busy_o <= 1'b1;end
-//                4'd4: begin rx_data[3] <= u_rx1; rx_busy_o <= 1'b1;end
-//                4'd5: begin rx_data[4] <= u_rx1; rx_busy_o <= 1'b1;end
-//                4'd6: begin rx_data[5] <= u_rx1; rx_busy_o <= 1'b1;end
-//                4'd7: begin rx_data[6] <= u_rx1; rx_busy_o <= 1'b1;end
-//                4'd8: begin rx_data[7] <= u_rx1; rx_busy_o <= 1'b1;end
-//                4'd9: begin rx_data[8] <= u_rx1; rx_busy_o <= 1'b1;end
-//                4'd10: begin  rx_data   <= rx_data; rx_busy_o <= 1'b0;end
-//                default : begin rx_data <= rx_data; rx_busy_o <= 1'b0;end
-//            endcase
-//        end
-//        else
-//            rx_data <= rx_data ;
-//    end
-    
+   
     
     // Receiving and store data
     always@(posedge clk_i or negedge rst_n_i) begin
@@ -260,4 +235,3 @@ endmodule
 //        else
 //            rx_data <= rx_data ;
 //    end
-    

@@ -178,7 +178,7 @@ module uart_tb();
         // Sending bit 7 of Data
 		#(5027*TIMEPERIOD);	u_rx = 1'b0;
 		// Sending parity check bit
-		#(5027*TIMEPERIOD);	u_rx = 1'b0;
+		#(5027*TIMEPERIOD);	u_rx = 1'b1;
 		// Sending Stop bit
 		#(5027*TIMEPERIOD);	u_rx = 1'b1;
 		
@@ -202,7 +202,7 @@ module uart_tb();
         // Sending bit 7 of Data
 		#(5027*TIMEPERIOD);	u_rx = 1'b1;
 		// Sending parity check bit
-		#(5027*TIMEPERIOD);	u_rx = 1'b1;
+		#(5027*TIMEPERIOD);	u_rx = 1'b0;
 		// Sending Stop bit
 		#(5027*TIMEPERIOD);	u_rx = 1'b1;
 		
@@ -226,7 +226,7 @@ module uart_tb();
         // Sending bit 7 of Data
 		#(5027*TIMEPERIOD);	u_rx = 1'b0;
 		// Sending parity check bit
-		#(5027*TIMEPERIOD);	u_rx = 1'b0;
+		#(5027*TIMEPERIOD);	u_rx = 1'b1;
 		// Sending Stop bit
 		#(5027*TIMEPERIOD);	u_rx = 1'b1;
 		
@@ -250,7 +250,7 @@ module uart_tb();
         // Sending bit 7 of Data
 		#(5027*TIMEPERIOD);	u_rx = 1'b0;
 		// Sending parity check bit
-		#(5027*TIMEPERIOD);	u_rx = 1'b0;
+		#(5027*TIMEPERIOD);	u_rx = 1'b1;
 		// Sending Stop bit
 		#(5027*TIMEPERIOD);	u_rx = 1'b1;
 

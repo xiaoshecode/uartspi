@@ -31,7 +31,7 @@ module uart_tb();
         uart u_uart
         (
             .clk_50m_i (clk),
-            .rst_n_i (rst_n),
+//            .rst_n_i (rst_n),
             .uart_rxd_i (u_rx),
 
             .uart_txd_o (u_tx)      

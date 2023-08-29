@@ -31,28 +31,39 @@ module uart_tx
         input tx_en_i,                  // Enable signal for transmission
         input [7:0] data_out_i,         // Data need to be sent
         
+        output wire [8:0] tx_data_test,
+        
         output reg tx_busy_o,           // Busy signal showing the transmission module is working 
 //        output reg tx_send_byte_done_o, // Showing that 1 byte has been sent 
-        output reg u_tx_o               // Data out to computer, bit by bit 
+        output wire uart_txd_o               // Data out to computer, bit by bit 
     );
     
     //parameter define
     localparam  BPS_DR  = CLK_FREQ * 1000000 / UART_BPS;   // Count for baud rate
     localparam  BAUD_FLAG = 1;          // Baud flag
     
-    
-    reg tx_state=1'b0;          // Tx state
+    reg tx_state;          // Tx state
     reg bit_flag;               // Flag showing transmission process is working
     reg tx_done;                // Tx finish
     reg e_check;                // Reg for even parity check
     reg o_check;                // Reg for odd parity check
     reg check;                  // Reg for parity check
+    
+//    reg tx_state=1'b0;          // Tx state
+//    reg bit_flag = 1'b0;               // Flag showing transmission process is working
+//    reg tx_done = 1'b0;                // Tx finish
+//    reg e_check = 1'b0;                // Reg for even parity check
+//    reg o_check = 1'b0;                // Reg for odd parity check
+//    reg check = 1'b0;                  // Reg for parity check
+    reg u_tx_o = 1'b1;
 
     reg [3:0]  bit_cnt;         // Counter for the bit to be sent
-    reg [8:0] tx_data;          // Data reg to store data need to be sent
+    reg [8:0] tx_data = 9'hx;          // Data reg to store data need to be sent
     reg [14:0] baud_cnt;        // Counter for baud rate
    
-
+    assign tx_data_test = tx_data;
+    
+    assign uart_txd_o = u_tx_o;
     
     /* Generate data transmission state signal, when transmitting, 
         Uart_state is 1, otherwise Uart_stae is 0 */

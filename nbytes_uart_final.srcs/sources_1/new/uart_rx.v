@@ -46,10 +46,10 @@ module uart_rx
 
     reg [14:0] baud_cnt;        // Counting value for baud rate
     reg [8:0] rx_data;
-    reg [3:0]  bit_cnt;         // Counting value for bit has recived in byte data 
+    reg [3:0]  bit_cnt = 4'd0;         // Counting value for bit has recived in byte data 
 
-    reg rx_state;               // Receiving process state
-    reg bit_flag;               
+    reg rx_state = 1'b0;               // Receiving process state
+    reg bit_flag = 1'b0;               
     reg rx_done;                // Showing receiving process finish
     
     reg o_check;                // Reg for odd check

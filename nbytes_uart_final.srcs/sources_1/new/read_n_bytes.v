@@ -50,8 +50,8 @@ module read_n_bytes
     reg rx_busy0;                           // Flip-flop reg to catch negedge of rx_busy signal
     reg rx_busy1;
     reg crc_valid;                     
-    reg [3:0] rx_bytes_num;                 // Reg to count for the bytes num of data that rx module has received 
-    reg [8*BYTE_NUM-1 :0] rx_data_nbytes;   // Reg to store data getting from rx module 
+    reg [3:0] rx_bytes_num = 4'd0;                 // Reg to count for the bytes num of data that rx module has received 
+    reg [8*BYTE_NUM-1 :0] rx_data_nbytes  = 'h0;   // Reg to store data getting from rx module 
     reg rx_nbytes_finish_o;                   // Reg to store finish signal that module has received n bytes data
     reg[3:0] nbytes_valid_num;
 

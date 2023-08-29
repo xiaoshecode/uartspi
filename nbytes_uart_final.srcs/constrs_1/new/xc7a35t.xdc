@@ -15,7 +15,7 @@ set_property -dict { PACKAGE_PIN G15    IOSTANDARD LVCMOS33 } [get_ports { uart_
 #set_property -dict { PACKAGE_PIN A9    IOSTANDARD LVCMOS33 } [get_ports { uart_txd_in }]; #IO_L14N_T2_SRCC_16 Sch=uart_txd_in
 
 # Buttons
-set_property -dict { PACKAGE_PIN F20    IOSTANDARD LVCMOS33 } [get_ports { rst_n_i }]; #IO_L6N_T0_VREF_16 Sch=btn[0]
+#set_property -dict { PACKAGE_PIN F20    IOSTANDARD LVCMOS33 } [get_ports { rst_n_i }]; #IO_L6N_T0_VREF_16 Sch=btn[0]
 #set_property -dict { PACKAGE_PIN M13    IOSTANDARD LVCMOS33 } [get_ports { KEY1 }]; #IO_L6N_T0_VREF_16 Sch=btn[0]
 #set_property -dict { PACKAGE_PIN K14    IOSTANDARD LVCMOS33 } [get_ports { KEY2 }]; #IO_L11P_T1_SRCC_16 Sch=btn[1]
 #set_property -dict { PACKAGE_PIN K13    IOSTANDARD LVCMOS33 } [get_ports { KEY3 }]; #IO_L11N_T1_SRCC_16 Sch=btn[2]

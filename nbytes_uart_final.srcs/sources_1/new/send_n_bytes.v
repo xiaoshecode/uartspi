@@ -32,7 +32,7 @@ module send_n_bytes
         input rst_n_i,                              // Resset signal, it will active when rst_n_i = 0
         input send_en_i,                            // Send enable signal, activate when send_en_i = 1. Starting sending process
         input [8*BYTE_NUM-1:0] nbytes_data_out_i,   // N_bytes data need to be sent to computer
-    
+
         output reg tx_nbytes_busy_o,                // Signal showing that module is sending n bytes data
         output uart_txd_o                           // Bit output for data to send to computer 
     );
@@ -44,16 +44,17 @@ module send_n_bytes
     wire tx_send_byte_done_i;                         // Signal showing that 1 byte transmission done
     
     // Reg definition
-    reg send_en_reg0;                               // Flip-flop reg to catch posedge of send_en signal 
-    reg send_en_reg1;
-    reg send_done_reg0;                             // Flip-flop reg to catch posedge of 1 byte send_done signal 
-    reg send_done_reg1;
-    reg tx_en_reg;                                  // Reg to store enable signal 
-    reg [8*BYTE_NUM -1:0] data_out_reg;             // Reg to store data need to be sent getting from top module
-    reg [3:0] tx_send_num;                          // Reg to count how many bytes data current has sent 
-    reg [7:0] data_o;                               // 1 byte data passing to tx module
+    reg send_en_reg0 = 1'b0;                               // Flip-flop reg to catch posedge of send_en signal 
+    reg send_en_reg1 = 1'b0;
+    reg send_done_reg0 = 1'b0;                             // Flip-flop reg to catch posedge of 1 byte send_done signal 
+    reg send_done_reg1 = 1'b0;
+    reg tx_en_reg =1'b0;                                  // Reg to store enable signal 
+    reg [8*BYTE_NUM -1:0] data_out_reg = 'hx;             // Reg to store data need to be sent getting from top module
+    reg [3:0] tx_send_num =4'd0;                          // Reg to count how many bytes data current has sent 
+    reg [7:0] data_o ='hx;                               // 1 byte data passing to tx module
     
-
+//    assign data_out_test = data_o;
+    assign tx_en_test = tx_en_o;
     
 //////////////////////////////////////////////////////////////////////////////////
     // Instantiate Tx module for sending data
@@ -70,8 +71,7 @@ module send_n_bytes
         .tx_en_i(tx_en_o),
         
         .tx_busy_o(tx_busy_in),
-//        .tx_send_byte_done_o(tx_send_byte_done_i),
-        .u_tx_o (uart_txd_o)  
+        .uart_txd_o (uart_txd_o)  
     );
 //////////////////////////////////////////////////////////////////////////////////
     // Control part of sending n bytes signal to computer 
@@ -103,21 +103,7 @@ module send_n_bytes
             send_done_reg1 <= send_done_reg0;                            
         end
     end
-    
-//    // Catch posedge of 1 byte sent done signal
-//    assign send_done_pos = send_done_reg0 & (~send_done_reg1);
-    
-//    always @(posedge clk_i or negedge rst_n_i) begin         
-//        if (!rst_n_i) begin
-//            send_done_reg0 <= 1'b0;                                  
-//            send_done_reg1 <= 1'b0;
-//        end                                                      
-//        else begin                                               
-//            send_done_reg0 <= tx_send_byte_done_i;                               
-//            send_done_reg1 <= send_done_reg0;                            
-//        end
-//    end
-    
+
     
     // Generating enable signal for tx module
     assign tx_en_o = tx_en_reg;
@@ -153,7 +139,6 @@ module send_n_bytes
                     tx_nbytes_busy_o <= 1'b0;
                 end
                 else begin
-//                    tx_nbytes_busy_o <= 1'b1;
                     tx_nbytes_busy_o <= tx_nbytes_busy_o;
                 end                
             end
@@ -191,3 +176,27 @@ endmodule
 //            send_done_reg1 <= send_done_reg0;                            
 //        end
 //    end
+
+    
+//    // Catch posedge of 1 byte sent done signal
+//    assign send_done_pos = send_done_reg0 & (~send_done_reg1);
+    
+//    always @(posedge clk_i or negedge rst_n_i) begin         
+//        if (!rst_n_i) begin
+//            send_done_reg0 <= 1'b0;                                  
+//            send_done_reg1 <= 1'b0;
+//        end                                                      
+//        else begin                                               
+//            send_done_reg0 <= tx_send_byte_done_i;                               
+//            send_done_reg1 <= send_done_reg0;                            
+//        end
+//    end
+
+//        .tx_data_test(data_out_test),    
+//        .tx_send_byte_done_o(tx_send_byte_done_i),
+//                    tx_nbytes_busy_o <= 1'b1;
+
+        
+//        output wire [8:0] data_out_test,
+//        output wire tx_en_test,
+    

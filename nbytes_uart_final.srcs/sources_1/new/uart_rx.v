@@ -30,7 +30,7 @@ module uart_rx
         input rst_n_i,                  // Reset signal, active when 0 
         input uart_rxd_i,               // Data input from computer 
 
-        output reg rx_busy_o,           // RX module is working receiving data
+        output wire rx_bytes_done_o,    // RX module finished receiving data
         output reg rx_valid_o,          /* Data received is valid(data pass parity check) when rx_valid_o = 1, this signal will be generated 
                                            when rx_busy drop to 0. So check both negedge of rx_busy signal and posedge of rx_valid signal will
                                            indicate a byte data has been received and the data is correct. */
@@ -55,7 +55,10 @@ module uart_rx
     reg o_check;                // Reg for odd check
     reg e_check;                // Reg for even check
     wire check;                 // Wire for parity check
-        
+    
+    reg rx_busy_o;              // Reg for showing rx module is working 
+    reg rx_busy0;               // FF reg to catch rx_busy's negedge
+    reg rx_busy1;    
     
     
     /* Generate data receiving state signal, when receiving, 
@@ -208,6 +211,21 @@ module uart_rx
         else
             rx_valid_o <= 1'b0 ;
     end
+    
+    // Catch negedge of rx_busy signal, showing 8 bits data has been received 
+    assign rx_bytes_done_o = rx_busy1 & (~rx_busy0);
+    
+    always @(posedge clk_i or negedge rst_n_i) begin         
+        if (!rst_n_i) begin
+            rx_busy0 <= 1'b0;                                  
+            rx_busy1 <= 1'b0;
+        end                                                      
+        else begin                                               
+            rx_busy0 <= rx_busy_o;                               
+            rx_busy1 <= rx_busy0;                            
+        end
+    end
+    
 
 endmodule
 

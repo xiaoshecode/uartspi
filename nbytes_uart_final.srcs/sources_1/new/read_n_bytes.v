@@ -69,28 +69,14 @@ module read_n_bytes
         .rst_n_i (rst_n_i),
         .uart_rxd_i (uart_rxd_i),
         
-        .rx_busy_o(rx_busy_i),    
         .rx_valid_o (rx_valid_i),
+        .rx_bytes_done_o(rx_bytes_done),
         .data_in_o (data_i)
     );
 
 //////////////////////////////////////////////////////////////////////////////////
     // Control part for reading data, store them byte by byte and output them
-    
-    // Catch negedge of rx_busy signal, showing 8 bits data has been received 
-    assign rx_bytes_done = rx_busy1 & (~rx_busy0);
-    
-    always @(posedge clk_i or negedge rst_n_i) begin         
-        if (!rst_n_i) begin
-            rx_busy0 <= 1'b0;                                  
-            rx_busy1 <= 1'b0;
-        end                                                      
-        else begin                                               
-            rx_busy0 <= rx_busy_i;                               
-            rx_busy1 <= rx_busy0;                            
-        end
-    end
-    
+
     // Store data getting from rx module, output them when rx module received N bytes data needed 
     always @(posedge clk_i or negedge rst_n_i) begin         
         if (!rst_n_i) begin
@@ -262,3 +248,18 @@ endmodule
 //                    rx_nbytes_valid_o <= 1'b1;
 //    reg rx_nbytes_error_o;  
 //        output reg rx_nbytes_valid_o,                   // Valid signal for data received, when read n bytes done and all data is valid, valid signal is 1
+
+    
+//    // Catch negedge of rx_busy signal, showing 8 bits data has been received 
+//    assign rx_bytes_done = rx_busy1 & (~rx_busy0);
+    
+//    always @(posedge clk_i or negedge rst_n_i) begin         
+//        if (!rst_n_i) begin
+//            rx_busy0 <= 1'b0;                                  
+//            rx_busy1 <= 1'b0;
+//        end                                                      
+//        else begin                                               
+//            rx_busy0 <= rx_busy_i;                               
+//            rx_busy1 <= rx_busy0;                            
+//        end
+//    end

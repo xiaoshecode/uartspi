@@ -3,12 +3,13 @@
 // SPI_Master V1.0
 // xiaoshe from TIQC
 // *******************************************************
-//Àı»¯ËµÃ÷£º
+//ä¾‹åŒ–è¯´æ˜ï¼š
 // SPI_Master 
 // #(
 // 	.CLK_FREQ(100),			/* 100MHz */
 // 	.SPI_CLK (5000),		    /* 5000kHz */
-// 	.CPOL(0),				/* SPI */
+// 	.CPOL(0),				/* CPOL=0: idle low, first edge rising.
+   CPOL=1: idle high, first edge falling. */
 // 	.CPHA(0),				/* SPI */
 // 	.DATA_WIDTH(DATA_WIDTH)			/* 24bit */
 // )
@@ -34,19 +35,19 @@ module SPI_Clock#
 	input       RstP_I,
 	input       En_I,
 	output      SCK_O,
-	output      SCKEdge1_O,		    /* Ê±ÖÓµÄµÚÒ»¸öÌø±äÑØ */
-	output      SCKEdge2_O			/* Ê±ÖÓµÄµÚ¶ş¸öÌø±äÑØ */
+	output      SCKEdge1_O,		    /* æ—¶é’Ÿçš„ç¬¬ä¸€ä¸ªè·³å˜æ²¿ */
+	output      SCKEdge2_O			/* æ—¶é’Ÿçš„ç¬¬äºŒä¸ªè·³å˜æ²¿ */
 );
 
-/* SPIÊ±ĞòËµÃ÷£º1¡¢µ±CPOL=1Ê±£¬SCKÔÚ¿ÕÏĞÊ±ºòÎªµÍµçÆ½£¬µÚÒ»¸öÌø±äÎªÉÏÉıÑØ
-				2¡¢µ±CPOL=0Ê±£¬SCKÔÚ¿ÕÏĞÊ±Îª¸ßµçÆ½£¬µÚÒ»¸öÌø±äÎªÏÂ½µÑØ
+/* SPIæ—¶åºè¯´æ˜ï¼š1ã€å½“CPOL=1æ—¶ï¼ŒSCKåœ¨ç©ºé—²æ—¶å€™ä¸ºä½ç”µå¹³ï¼Œç¬¬ä¸€ä¸ªè·³å˜ä¸ºä¸Šå‡æ²¿
+				2ã€å½“CPOL=0æ—¶ï¼ŒSCKåœ¨ç©ºé—²æ—¶ä¸ºé«˜ç”µå¹³ï¼Œç¬¬ä¸€ä¸ªè·³å˜ä¸ºä¸‹é™æ²¿
 */
-/* Ê±ÖÓ·ÖÆµ¼ÆÊıÆ÷ */
+/* æ—¶é’Ÿåˆ†é¢‘è®¡æ•°å™¨ */
 localparam	CLK_DIV_CNT = (CLK_FREQ * 1000)/SPI_CLK_FREQ;
 reg         SCK;
 reg         SCK_Pdg, SCK_Ndg;
 reg[31:0]	ClkDivCnt;
-/* Ê±ÖÓ·ÖÆµ¼ÆÊıÆ÷¿ØÖÆ¿é */
+/* æ—¶é’Ÿåˆ†é¢‘è®¡æ•°å™¨æ§åˆ¶å— */
 always@(posedge Clk_I or posedge RstP_I) begin
 	if(RstP_I)
 		ClkDivCnt <= 32'd0;
@@ -59,7 +60,7 @@ always@(posedge Clk_I or posedge RstP_I) begin
             ClkDivCnt <= ClkDivCnt + 1'b1;
     end
 end
-/* SCK¿ØÖÆ¿é */
+/* SCKæ§åˆ¶å— */
 always@(posedge Clk_I or posedge RstP_I) begin
 	if(RstP_I)
         SCK <= (CPOL) ? 1'b1 : 1'b0;
@@ -72,7 +73,7 @@ always@(posedge Clk_I or posedge RstP_I) begin
             SCK <= SCK;
     end
 end
-/* SCKÉÏÉıÑØ¼ì²â¿é */
+/* SCKä¸Šå‡æ²¿æ£€æµ‹å— */
 always@(posedge Clk_I or posedge RstP_I) begin
     if(RstP_I)
         SCK_Pdg <= 1'b0;
@@ -84,7 +85,7 @@ always@(posedge Clk_I or posedge RstP_I) begin
     end
 end
  
-/* SCKÏÂ½µÑØ¼ì²â¿é */
+/* SCKä¸‹é™æ²¿æ£€æµ‹å— */
 always@(posedge Clk_I or posedge RstP_I) begin
     if(RstP_I)
         SCK_Ndg <= 1'b0;
@@ -95,7 +96,7 @@ always@(posedge Clk_I or posedge RstP_I) begin
             SCK_Ndg <= (ClkDivCnt == CLK_DIV_CNT - 1) ? 1'b1 : 1'b0;
     end
 end
-/* ¸ù¾İCPOLÀ´Ñ¡Ôñ±ßÑØÊä³ö */
+/* æ ¹æ®CPOLæ¥é€‰æ‹©è¾¹æ²¿è¾“å‡º */
 assign SCKEdge1_O = (CPOL) ? SCK_Ndg : SCK_Pdg;
 assign SCKEdge2_O = (CPOL) ? SCK_Pdg : SCK_Ndg;
 assign SCK_O = SCK;
@@ -104,33 +105,33 @@ endmodule
 
 module SPI_Master#
 (
-	parameter	CLK_FREQ = 100,			/* Ä£¿éÊ±ÖÓÊäÈë£¬µ¥Î»ÎªMHz */
-	parameter	SPI_CLK = 1000,		    /* SPIÊ±ÖÓÆµÂÊ£¬µ¥Î»ÎªKHz */
-	parameter	CPOL = 0,				/* SPIÊ±ÖÓ¼«ĞÔ¿ØÖÆ */
-	parameter	CPHA = 0,				/* SPIÊ±ÖÓÏàÎ»¿ØÖÆ */
+	parameter	CLK_FREQ = 100,			/* æ¨¡å—æ—¶é’Ÿè¾“å…¥ï¼Œå•ä½ä¸ºMHz */
+	parameter	SPI_CLK = 1000,		    /* SPIæ—¶é’Ÿé¢‘ç‡ï¼Œå•ä½ä¸ºKHz */
+	parameter	CPOL = 0,				/* SPIæ—¶é’Ÿææ€§æ§åˆ¶ */
+	parameter	CPHA = 0,				/* SPIæ—¶é’Ÿç›¸ä½æ§åˆ¶ */
 	
-	parameter	DATA_WIDTH = 24			/* Êı¾İ¿í¶È */
+	parameter	DATA_WIDTH = 24			/* æ•°æ®å®½åº¦ */
 )
 (
-	input       Clk_I,			/* Ä£¿éÊ±ÖÓÊäÈë£¬Ó¦ºÍCLK_FREQÒ»Ñù */
-	input       RstP_I,			/* Í¬²½¸´Î»ĞÅºÅ£¬µÍµçÆ½ÓĞĞ§ */
+	input       Clk_I,			/* æ¨¡å—æ—¶é’Ÿè¾“å…¥ï¼Œåº”å’ŒCLK_FREQä¸€æ · */
+	input       RstP_I,			/* Active-high asynchronous reset. */
 	
-	input       WrRdReq_I,		                        /* ¶Á/Ğ´Êı¾İÇëÇó */	
-	input       [DATA_WIDTH - 1:0]      Data_I,		    /* ÒªĞ´ÈëµÄÊı¾İ */
-	output      [DATA_WIDTH - 1:0]      Data_O,		    /* ¶ÁÈ¡µ½µÄÊı¾İ */
-	output	    DataValid_O,	                        /* ¶ÁÈ¡Êı¾İÓĞĞ§£¬ÉÏÉıÑØÓĞĞ§ */
-	output 	    Busy_O,			                        /* Ä£¿éÃ¦ĞÅºÅ */
+	input       WrRdReq_I,		                        /* è¯»/å†™æ•°æ®è¯·æ±‚ */
+	input       [DATA_WIDTH - 1:0]      Data_I,		    /* è¦å†™å…¥çš„æ•°æ® */
+	output      [DATA_WIDTH - 1:0]      Data_O,		    /* è¯»å–åˆ°çš„æ•°æ® */
+	output	    DataValid_O,	                        /* è¯»å–æ•°æ®æœ‰æ•ˆï¼Œä¸Šå‡æ²¿æœ‰æ•ˆ */
+	output 	    Busy_O,			                        /* æ¨¡å—å¿™ä¿¡å· */
     
-	output	    SCK_O,			/* SPIÄ£¿éÊ±ÖÓÊä³ö */
+	output	    SCK_O,			/* SPIæ¨¡å—æ—¶é’Ÿè¾“å‡º */
 	output	    MOSI_O,			/* MOSI_O */
 	input	    MISO_I,			/* MISO_I  */
 	output		CS_O
 );
  
-localparam	    IDLE 	= 0;		/* Ä£¿é¿ÕÏĞ */
+localparam	    IDLE 	= 0;		/* æ¨¡å—ç©ºé—² */
 localparam	    START	= 1;
-localparam	    RUNNING	= 2;		/* Ä£¿éÔËĞĞÖĞ */
-localparam	    DELIVER	= 3;		/* Êı¾İ×ª·¢ */
+localparam	    RUNNING	= 2;		/* æ¨¡å—è¿è¡Œä¸­ */
+localparam	    DELIVER	= 3;		/* æ•°æ®è½¬å‘ */
  
  
 reg[7:0]        MainState, NxtMainState;
@@ -143,11 +144,11 @@ reg[7:0]	    SCKEdgeCnt;
 reg[DATA_WIDTH - 1:0]	    WrDataLatch;
 reg[DATA_WIDTH - 1:0]	    RdDataLatch;
  
-/* ¶ÁĞ´ĞÅºÅÉÏÉıÑØ¼ì²â */
+/* è¯»å†™ä¿¡å·ä¸Šå‡æ²¿æ£€æµ‹ */
 wire 	        WrRdReq_Pdg;					
 reg 	        WrRdReq_D0, WrRdReq_D1;
  
-/* ÊµÀı»¯Ò»¸öSPIÊ±ÖÓÄ£¿é */
+/* å®ä¾‹åŒ–ä¸€ä¸ªSPIæ—¶é’Ÿæ¨¡å— */
 SPI_Clock#
 (
 	.CLK_FREQ(CLK_FREQ),
@@ -164,7 +165,7 @@ SPI_Clock_Inst
 	.SCK_O(SCK_O)
 );
  
-/* ¼ì²âĞ´ÇëÇóµÄÉÏÉıÑØ */
+/* æ£€æµ‹å†™è¯·æ±‚çš„ä¸Šå‡æ²¿ */
 assign	WrRdReq_Pdg = (WrRdReq_D0) && (~WrRdReq_D1);
 always@(posedge Clk_I or posedge RstP_I) begin
 	if(RstP_I) begin	
@@ -177,7 +178,7 @@ always@(posedge Clk_I or posedge RstP_I) begin
 	end
 end
  
-/* Ö÷×´Ì¬»ú */
+/* ä¸»çŠ¶æ€æœº */
 always@(posedge Clk_I or posedge RstP_I) begin
     if(RstP_I)
         MainState <= IDLE;
@@ -197,15 +198,15 @@ always@(*) begin
 end
  
  
-/* ·¢ËÍÊı¾İ¿ØÖÆ¿é */
+/* å‘é€æ•°æ®æ§åˆ¶å— */
 always@(posedge Clk_I or posedge RstP_I) begin
     if(RstP_I)
         WrDataLatch <= 0;
     else begin
         case(MainState)
-            START: WrDataLatch <= Data_I;	/* ÏÈ±£´æĞèÒª·¢ËÍµÄÊı¾İ */
+            START: WrDataLatch <= Data_I;	/* å…ˆä¿å­˜éœ€è¦å‘é€çš„æ•°æ® */
             RUNNING: begin
-                /* Èç¹ûCPHA=1£¬ÔòÔÚÊ±ÖÓµÄµÚÒ»¸ö±ßÑØÊä³ö£¬·ñÔòÔÚµÚ¶ş¸ö±ßÑØÊä³ö */
+                /* å¦‚æœCPHA=1ï¼Œåˆ™åœ¨æ—¶é’Ÿçš„ç¬¬ä¸€ä¸ªè¾¹æ²¿è¾“å‡ºï¼Œå¦åˆ™åœ¨ç¬¬äºŒä¸ªè¾¹æ²¿è¾“å‡º */
                 if(CPHA == 1'b1 && SCKEdge1)
                     WrDataLatch <= {WrDataLatch[DATA_WIDTH - 2:0], 1'b0};
                 else if(CPHA == 1'b0 && SCKEdge2)
@@ -218,7 +219,7 @@ always@(posedge Clk_I or posedge RstP_I) begin
     end
 end
  
-/* ½ÓÊÕÊı¾İ¿ØÖÆ¿é */
+/* æ¥æ”¶æ•°æ®æ§åˆ¶å— */
 always@(posedge Clk_I or posedge RstP_I) begin
     if(RstP_I)
         RdDataLatch <= 0;
@@ -226,8 +227,8 @@ always@(posedge Clk_I or posedge RstP_I) begin
         case(MainState)
             START: RdDataLatch <= 0;
             RUNNING: begin
-                /* Èç¹ûCPHA = 1£¬ÔòÔÚÊ±ÖÓµÄÃ¿¶ş¸ö±ßÑØ¶ÔÊı¾İ½øĞĞ²ÉÑù£¬
-                   ·ñÔòÔÚµÚÒ»¸ö±ßÑØ²ÉÑù */
+                /* å¦‚æœCPHA = 1ï¼Œåˆ™åœ¨æ—¶é’Ÿçš„æ¯äºŒä¸ªè¾¹æ²¿å¯¹æ•°æ®è¿›è¡Œé‡‡æ ·ï¼Œ
+                   å¦åˆ™åœ¨ç¬¬ä¸€ä¸ªè¾¹æ²¿é‡‡æ · */
                 if(CPHA == 1'b1 && SCKEdge2)	
                     RdDataLatch <= {RdDataLatch[DATA_WIDTH - 2:0], MISO_I};
                 else if(CPHA == 1'b0 && SCKEdge1)
@@ -240,14 +241,14 @@ always@(posedge Clk_I or posedge RstP_I) begin
     end
 end
  
-/* Ê±ÖÓ±ßÑØ¼ÆÊı¿é */
+/* æ—¶é’Ÿè¾¹æ²¿è®¡æ•°å— */
 always@(posedge Clk_I or posedge RstP_I) begin
 	if(RstP_I)
 		SCKEdgeCnt <= 7'd0;
 	else begin
 		case(MainState)
 			RUNNING: begin
-				if(SCKEdge1 || SCKEdge2)		/* Í³¼ÆÁ½¸öÊ±ÖÓ±ßÑØÊıÁ¿ */
+				if(SCKEdge1 || SCKEdge2)		/* ç»Ÿè®¡ä¸¤ä¸ªæ—¶é’Ÿè¾¹æ²¿æ•°é‡ */
 					SCKEdgeCnt <= SCKEdgeCnt + 1'b1;
 				else
 					SCKEdgeCnt <= SCKEdgeCnt;
@@ -257,23 +258,22 @@ always@(posedge Clk_I or posedge RstP_I) begin
 	end
 end
 
-/* ½ÓÊÕÍê³É±êÖ¾ */
+/* æ¥æ”¶å®Œæˆæ ‡å¿— */
 assign	RecvDoneFlag = (SCKEdgeCnt == DATA_WIDTH * 2);
-/* Êı¾İ½ÓÊÕÍê³ÉÊ±Êä³öÒ»¸öÊ±ÖÓ¿í¶ÈµÄÂö³åĞÅºÅ */
+/* æ•°æ®æ¥æ”¶å®Œæˆæ—¶è¾“å‡ºä¸€ä¸ªæ—¶é’Ÿå®½åº¦çš„è„‰å†²ä¿¡å· */
 assign DataValid_O = (MainState == DELIVER) ? 1'b1 : 1'b0;
-/* ¶ÁÈ¡µ½µÄÊı¾İ */
+/* è¯»å–åˆ°çš„æ•°æ® */
 assign Data_O = RdDataLatch;
-/* Ä£¿éÃ¦ĞÅºÅ */
+/* æ¨¡å—å¿™ä¿¡å· */
 assign Busy_O = (MainState == IDLE) ? 1'b0 : 1'b1;
-/* ½«Òª·¢ËÍµÄÊı¾İ·¢ËÍµ½MOSIÏßÉÏ */
+/* å°†è¦å‘é€çš„æ•°æ®å‘é€åˆ°MOSIçº¿ä¸Š */
 assign MOSI_O = (MainState == RUNNING) ? WrDataLatch[DATA_WIDTH - 1] : 1'bz;
 
-/* Æ¬Ñ¡ */
+/* ç‰‡é€‰ */
 assign	CS_O = (MainState == RUNNING) ? 1'b0 : 1'b1;
 
-/* SPIÊ±ÖÓÊ¹ÄÜĞÅºÅ */
+/* SPIæ—¶é’Ÿä½¿èƒ½ä¿¡å· */
 assign	SCKEnable = (MainState == RUNNING) ? 1'b1 : 1'b0;
 
 
 endmodule
- 

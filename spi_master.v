@@ -8,8 +8,7 @@
 // #(
 // 	.CLK_FREQ(100),			/* 100MHz */
 // 	.SPI_CLK (5000),		    /* 5000kHz */
-// 	.CPOL(0),				/* CPOL=0: idle low, first edge rising.
-   CPOL=1: idle high, first edge falling. */
+// 	.CPOL(0),				/* SPI */
 // 	.CPHA(0),				/* SPI */
 // 	.DATA_WIDTH(DATA_WIDTH)			/* 24bit */
 // )
@@ -39,9 +38,8 @@ module SPI_Clock#
 	output      SCKEdge2_O			/* 时钟的第二个跳变沿 */
 );
 
-/* SPI时序说明：1、当CPOL=1时，SCK在空闲时候为低电平，第一个跳变为上升沿
-				2、当CPOL=0时，SCK在空闲时为高电平，第一个跳变为下降沿
-*/
+/* CPOL=0: idle low, first edge rising.
+   CPOL=1: idle high, first edge falling. */
 /* 时钟分频计数器 */
 localparam	CLK_DIV_CNT = (CLK_FREQ * 1000)/SPI_CLK_FREQ;
 reg         SCK;

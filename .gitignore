@@ -1,0 +1,9 @@
+__pycache__/
+*.py[cod]
+.venv/
+*.vvp
+*.vcd
+.Xil/
+*.jou
+*.log
+.tools/

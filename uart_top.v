@@ -12,7 +12,7 @@ module  uart
     )
     (
         input clk_50m_i,                    // System clock
-//        input rst_n_i,                      // RESET button, active when rst_n_i is 0 
+        input rst_n_i,                      // RESET button, active when rst_n_i is 0
         input uart_rxd_i,                   // Bit data received from computer
         
         output uart_txd_o                   // Bit data send to computer
@@ -31,7 +31,7 @@ module  uart
     wire valid_neg;                         // Signal to catch posedge of rx data valid signal
     wire rx_nbytes_done_i;
     wire rx_nbytes_crc_valid;
-    wire [8*BYTE_NUM-1:0] uart_nbytes_data ='hx; // Signal to tranmit uart data from read n bytes module to send n bytes module
+    wire [8*BYTE_NUM-1:0] uart_nbytes_data; // Signal to tranmit uart data from read n bytes module to send n bytes module
     
     
     // Reg definition
@@ -47,8 +47,7 @@ module  uart
     reg [2:0] tx_send_reg =3'b0;                  // Number of group data that has been sent
     reg [2:0] rx_read_reg =3'b0;                  // Number of group data that has been read
     
-    reg rst_n = 1'b1;
-    assign rst_n_i = rst_n;
+
 
 
 //////////////////////////////////////////////////////////////////////////////////

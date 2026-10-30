@@ -6,3 +6,4 @@ __pycache__/
 .Xil/
 *.jou
 *.log
+.tools/
